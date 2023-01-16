@@ -5,12 +5,16 @@
 	</head>
 	
 	<body>
-		Welcome to Login Page.
-		
-		<form>
-			Name: <input type="text" name="name">
-			
-		</form>
+		<div class="container">
+			<h1>Login</h1>
+			<hr>
+			<pre>${errorMessage}</pre>
+			<form method="post">
+				Name: <input type="text" name="name">
+				Password: <input type="password" name="password">
+				<input type="submit"> 
+			</form>
+		</div>
 	</body>
 
 </html>
