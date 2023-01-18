@@ -8,6 +8,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import jakarta.validation.Valid;
@@ -16,12 +17,12 @@ import jakarta.validation.Valid;
 @SessionAttributes("name")
 public class ToDoController {
 
-	public ToDoController(com.gary.springboot.todolist.todo.ToDoService ToDoService) {
+	public ToDoController(com.gary.springboot.todolist.todo.TodoService ToDoService) {
 		super();
 		toDoService = ToDoService;
 	}
 
-	private ToDoService toDoService;
+	private TodoService toDoService;
 	
 
 	@RequestMapping("list-todos")
@@ -38,6 +39,7 @@ public class ToDoController {
 		
 		String username = (String)model.get("name");
 		Todo todo = new Todo(0, username, "Default Description", LocalDate.now().plusYears(1), false);
+		// In todo.jsp. modelAttribute say that todo should be put in.
 		model.put("todo", todo);
 		
 		return "todo";
@@ -52,7 +54,29 @@ public class ToDoController {
 		
 		String username = (String)model.get("name");
 		toDoService.addToDo(username, todo.getDescription(), 
-				LocalDate.now().plusYears(1), false);
+				todo.getTargetDate(), false);
+		
+		return "redirect:list-todos";
+	}
+	
+	@RequestMapping(value="update-todo", method=RequestMethod.GET)
+	public String showUpdateTodoPage(@RequestParam int id, ModelMap model) {
+		
+		Todo todo = toDoService.findById(id);
+		model.addAttribute("todo", todo);
+		return "todo";
+	}
+	
+	@RequestMapping(value="update-todo", method=RequestMethod.POST)
+	public String updateTodo(ModelMap model,  @Valid Todo todo, BindingResult result) {
+		
+		if (result.hasErrors()) {
+			return "todo";
+		}
+		
+		String username = (String)model.get("name");
+		todo.setUsername(username);
+		toDoService.updateTodo(todo);
 		
 		return "redirect:list-todos";
 	}
