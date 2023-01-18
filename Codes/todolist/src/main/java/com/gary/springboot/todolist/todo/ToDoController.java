@@ -3,15 +3,19 @@ package com.gary.springboot.todolist.todo;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import jakarta.validation.Valid;
+//import jakarta.validation.Valid;
 
 @Controller
 @SessionAttributes("name")
@@ -27,8 +31,9 @@ public class ToDoController {
 
 	@RequestMapping("list-todos")
 	public String listAllToDos(ModelMap model) {
+		String username = getLoggedUsername(model);
 		
-		List<Todo> todos = toDoService.findByUsername("gary");
+		List<Todo> todos = toDoService.findByUsername(username);
 		model.addAttribute("todos", todos);
 		
 		return "listToDos";
@@ -37,7 +42,7 @@ public class ToDoController {
 	@RequestMapping(value="add-todo", method=RequestMethod.GET)
 	public String showNewToDoPage(ModelMap model) {
 		
-		String username = (String)model.get("name");
+		String username = getLoggedUsername(model);
 		Todo todo = new Todo(0, username, "Default Description", LocalDate.now().plusYears(1), false);
 		// In todo.jsp. modelAttribute say that todo should be put in.
 		model.put("todo", todo);
@@ -46,13 +51,13 @@ public class ToDoController {
 	}
 	
 	@RequestMapping(value="add-todo", method=RequestMethod.POST)
-	public String addNewToDo(ModelMap model, @Valid Todo todo, BindingResult result) {
+	public String addNewToDo(ModelMap model, @Validated Todo todo, BindingResult result) {
 		
 		if (result.hasErrors()) {
 			return "todo";
 		}
 		
-		String username = (String)model.get("name");
+		String username = getLoggedUsername(model);
 		toDoService.addToDo(username, todo.getDescription(), 
 				todo.getTargetDate(), false);
 		
@@ -68,17 +73,21 @@ public class ToDoController {
 	}
 	
 	@RequestMapping(value="update-todo", method=RequestMethod.POST)
-	public String updateTodo(ModelMap model,  @Valid Todo todo, BindingResult result) {
+	public String updateTodo(ModelMap model, @Valid Todo todo, BindingResult result) {
 		
 		if (result.hasErrors()) {
 			return "todo";
 		}
 		
-		String username = (String)model.get("name");
+		String username = getLoggedUsername(model);
 		todo.setUsername(username);
 		toDoService.updateTodo(todo);
 		
 		return "redirect:list-todos";
 	}
 	
+	private String getLoggedUsername(ModelMap model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication.getName();
+	}
 }
