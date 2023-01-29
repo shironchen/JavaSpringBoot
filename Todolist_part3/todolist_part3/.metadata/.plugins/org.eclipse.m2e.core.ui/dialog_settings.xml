@@ -2,6 +2,7 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="D:\Github\JavaSpringBoot\Todolist_part3"/>
 			<item value="/Users/gary/Documents/GitHub/JavaSpringBoot/Codes/todolist"/>
 		</list>
 		<list key="projectNameTemplate">

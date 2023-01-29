@@ -2,7 +2,7 @@
 <%@ include file="common/header.jspf" %>
 <%@ include file="common/navigation.jspf" %>
 <div class="container">
-	<div>Welcome ${name}, this is your todos list.</div>
+	<div>Welcome, this is your todos list.</div>
 	
 	<hr>
 	<h1>ToDos</h1>
@@ -10,7 +10,6 @@
 	<table class="table">
 		<thead>
 			<tr>
-				<th>id</th>
 				<th>Description</th>
 				<th>Target Date</th>
 				<th>Is Done?</th>

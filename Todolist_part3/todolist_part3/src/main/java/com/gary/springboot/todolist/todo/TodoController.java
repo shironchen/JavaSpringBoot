@@ -3,8 +3,6 @@ package com.gary.springboot.todolist.todo;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -15,51 +13,43 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import jakarta.validation.Valid;
-//import jakarta.validation.Valid;
 
 @Controller
 @SessionAttributes("name")
-public class ToDoController {
+public class TodoController {
 
-	public ToDoController(com.gary.springboot.todolist.todo.TodoService ToDoService) {
+	public TodoController(com.gary.springboot.todolist.todo.TodoService TodoService) {
 		super();
-		toDoService = ToDoService;
+		todoService = TodoService;
 	}
 
-	private TodoService toDoService;
+	private TodoService todoService;
 	
 
-	@RequestMapping("list-todos")
+	@RequestMapping(value="list-todos", method=RequestMethod.GET)
 	public String listAllToDos(ModelMap model) {
-		String username = getLoggedUsername(model);
 		
-		List<Todo> todos = toDoService.findByUsername(username);
+		List<Todo> todos = todoService.getTodos();
 		model.addAttribute("todos", todos);
-		
-		return "listToDos";
+		return "listTodos";
 	}
 	
 	@RequestMapping(value="add-todo", method=RequestMethod.GET)
-	public String showNewToDoPage(ModelMap model) {
+	public String showNewTodoPage(ModelMap model) {
 		
-		String username = getLoggedUsername(model);
-		Todo todo = new Todo(0, username, "Default Description", LocalDate.now().plusYears(1), false);
-		// In todo.jsp. modelAttribute say that todo should be put in.
+		Todo todo = new Todo(0, "New Task", LocalDate.now().plusYears(1), false);
 		model.put("todo", todo);
-		
-		return "todo";
+		return "addTodo";
 	}
 	
 	@RequestMapping(value="add-todo", method=RequestMethod.POST)
 	public String addNewToDo(ModelMap model, @Validated Todo todo, BindingResult result) {
 		
 		if (result.hasErrors()) {
-			return "todo";
+			return "addTodo";
 		}
-		
-		String username = getLoggedUsername(model);
-		toDoService.addToDo(username, todo.getDescription(), 
-				todo.getTargetDate(), false);
+		todoService.add(todo.getDescription(), 
+				todo.getTargetDate(), todo.isDone());
 		
 		return "redirect:list-todos";
 	}
@@ -67,23 +57,26 @@ public class ToDoController {
 	@RequestMapping(value="update-todo", method=RequestMethod.GET)
 	public String showUpdateTodoPage(@RequestParam int id, ModelMap model) {
 		
-		Todo todo = toDoService.findById(id);
+		Todo todo = todoService.find(id);
 		model.addAttribute("todo", todo);
-		return "todo";
+		return "addTodo";
+	}
+	
+	@RequestMapping("delete-todo")
+	public String deleteTodo(@RequestParam int id) {
+		
+		todoService.delete(id);
+		return "redirect:list-todos";
 	}
 	
 	@RequestMapping(value="update-todo", method=RequestMethod.POST)
 	public String updateTodo(ModelMap model, @Valid Todo todo, BindingResult result) {
 		
 		if (result.hasErrors()) {
-			return "todo";
+			return "addTodo";
 		}
-		
-		String username = getLoggedUsername(model);
-		todo.setUsername(username);
-		toDoService.updateTodo(todo);
-		
+		todoService.update(todo);
 		return "redirect:list-todos";
 	}
-	
+
 }

@@ -14,38 +14,42 @@ public class TodoService {
 
 	private static List<Todo> todos = new ArrayList<>();
 	
+	public List<Todo> getTodos() {
+		return todos;
+	}
+	
 	private static int todosCount = 0;
 	
 	static {
-		todos.add(new Todo(++todosCount, "gary", "Learn Spring Boot",
+		todos.add(new Todo(++todosCount, "Learn Spring Boot",
 				LocalDate.now().plusYears(1), false));
-		todos.add(new Todo(++todosCount, "gary", "Learn JSP",
+		todos.add(new Todo(++todosCount, "Learn JSP",
 				LocalDate.now().plusYears(2), false));
-		todos.add(new Todo(++todosCount, "gary", "Learn Math",
+		todos.add(new Todo(++todosCount, "Learn Math",
 				LocalDate.now().plusYears(3), false));
 	}
 	
-	public void addToDo(String username, String description, LocalDate targetDate, boolean done) {
-		Todo todo = new Todo(++todosCount, username, description, targetDate, done);
+	public void add(String description, LocalDate targetDate, boolean done) {
+		Todo todo = new Todo(++todosCount, description, targetDate, done);
 		todos.add(todo);
 	}
 	
-	public void deleteTodoById(int id) {
+	public void delete(int id) {
 		
 		Predicate<? super Todo> predicate = todo -> todo.getId() == id;
 		todos.removeIf(predicate);
 	}
 	
-	public Todo findById(int id) {
+	public Todo find(int id) {
 		
 		Predicate<? super Todo> predicate = todo -> todo.getId() == id;
 		Todo todo = todos.stream().filter(predicate).findFirst().get();
 		return todo;
 	}
 
-	public void updateTodo(@Valid Todo todo) {
+	public void update(@Valid Todo todo) {
 		
-		deleteTodoById(todo.getId());
+		delete(todo.getId());
 		todos.add(todo);
 		
 	}
