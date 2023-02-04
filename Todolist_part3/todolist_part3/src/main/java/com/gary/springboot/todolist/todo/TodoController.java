@@ -50,7 +50,7 @@ public class TodoController {
 		todoService.add(todo.getDescription(), 
 				todo.getTargetDate(), todo.isDone());
 		
-		return "redirect:list-todos";
+		return "list-todos";
 	}
 	
 	@RequestMapping(value="update-todo", method=RequestMethod.GET)
