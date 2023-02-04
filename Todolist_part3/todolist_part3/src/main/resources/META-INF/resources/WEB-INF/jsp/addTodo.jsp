@@ -17,7 +17,7 @@
 	</fieldset>
 	
 	<fieldset class="mb-3">
-		<form:label path="targetDate">Is Done?</form:label>
+		<form:label path="done">Is Done?</form:label>
 		<form:input type="text" path="done" required="required"/>
 		<form:errors path="done" cssClass="text-warning"/>
 	</fieldset>

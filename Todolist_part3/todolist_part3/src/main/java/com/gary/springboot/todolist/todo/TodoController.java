@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import jakarta.validation.Valid;
 
 @Controller
-@SessionAttributes("name")
 public class TodoController {
 
 	public TodoController(com.gary.springboot.todolist.todo.TodoService TodoService) {
