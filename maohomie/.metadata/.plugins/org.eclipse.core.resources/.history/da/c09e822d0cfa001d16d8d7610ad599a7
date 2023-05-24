@@ -1,0 +1,11 @@
+package com.shiron.maohomie;
+
+@Controller
+public class WelcomeController {
+  @RequestMapping("welcome")
+  @ResponseBody
+  public String helloWorld() {
+    return "Hello-World!";
+  }
+	
+}
